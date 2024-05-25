@@ -59,6 +59,9 @@ private:
     uint64_t sigma0(uint64_t);
     // σ1(w)
     uint64_t sigma1(uint64_t);
+
+    // Execute a compression round.
+    void compress(std::array<uint64_t, 16>&);
 public:
     SHA512(std::array<uint64_t, 8>&);
     std::vector<uint64_t>& digest_message(std::string &message);

@@ -39,3 +39,40 @@ uint64_t SHA512::sigma0(uint64_t x) {
 uint64_t SHA512::sigma1(uint64_t x) {
     return rotr64(x, 19) ^ rotr64(x, 61) ^ (x >> 6);
 }
+
+
+void SHA512::compress(std::array<uint64_t, 16> &chunk) {
+    // Construct the message schedule array
+    std::array<uint64_t, 80> w = {};
+    for (int i = 0; i < 16; ++i) {
+        w[i] = chunk[i];
+    }
+    for (int i = 16; i < 80; ++i) {
+        w[i] = w[i - 16] + sigma0(w[i - 15]) + w[i - 7] + sigma1(w[i - 2]);
+    }
+
+    // Compress!
+    std::array<uint64_t, 8> s = state;
+    for (int i = 0; i < 80; ++i) {
+        uint64_t tmp1 = s[7] + sum1(s[4]) + choose(s[4], s[5], s[6]) + sha512_round_constants[i] + w[i];
+        uint64_t tmp2 = sum0(s[0]) + major(s[0], s[1], s[2]);
+
+        s[7] = s[6];
+        s[6] = s[5];
+        s[5] = s[4];
+        s[4] = s[3] + tmp1;
+        s[3] = s[2];
+        s[2] = s[1];
+        s[1] = s[0];
+        s[0] = tmp1 + tmp2;
+    }
+
+    state[0] += s[0];
+    state[1] += s[1];
+    state[2] += s[2];
+    state[3] += s[3];
+    state[4] += s[4];
+    state[5] += s[5];
+    state[6] += s[6];
+    state[7] += s[7];
+}
