@@ -1,5 +1,6 @@
 #include "sha256.hpp"
 #include <cassert>
+#include <iostream>
 
 
 // Round constants for SHA-224 and SHA-256.
@@ -39,6 +40,17 @@ uint32_t rotr32(uint32_t x, uint32_t n) {
     assert(n < 32);
     if (!n) return x;
     return (x >> n) | (x << (32 - n));
+}
+
+
+std::array<uint8_t, 8> expand_length(uint64_t length) {
+    std::cout << length << std::endl;
+    std::array<uint8_t, 8> result;
+    for (int i = 7; i >= 0; --i) {
+        result[7 - i] = (length >> (8 * i)) & 0xff;
+    }
+
+    return result;
 }
 
 
@@ -122,20 +134,19 @@ std::vector<uint8_t> SHA256::pad_message(std::string message) {
     for (auto &c : message) {
         result.push_back((uint8_t) c);
     }
-    
-    // Remember: size() returns number of bytes.
-    // TODO: Technically this approach limits us to 2^61 bytes in length.
-    uint64_t encoded_length = (uint64_t) message.size() << 3;
+    size_t length = message.size();
+    size_t remaining_bytes = (length + 8) % 64;
+    size_t required_padding_bytes = 64 - remaining_bytes;
+    size_t zero_bytes = required_padding_bytes - 1;
 
     result.push_back((uint8_t) 0x80);
-    while ((result.size() + 8) % 64 != 0) {
+    for (size_t i = 0; i < zero_bytes; ++i) {
         result.push_back((uint8_t) 0x00);
     }
 
-    // Append the encoded length in big-endian order.
-    for (int i = 7; i >= 0; --i) {
-        uint8_t new_byte = encoded_length >> (8 * i) & 0xff;
-        result.push_back((uint8_t) new_byte);
+    std::array<uint8_t, 8> encoded_length = expand_length(length * 8);
+    for (int i = 0; i < 8; ++i) {
+        result.push_back(encoded_length[i]);
     }
 
     return result;

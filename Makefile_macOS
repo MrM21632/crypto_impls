@@ -35,6 +35,10 @@ sha512sum_debug: sha512.cpp sha512sum.cpp
 	$(CXX) -o sha512sum sha512.o sha512sum.o $(LIBS) $(CXXFLAGS)
 
 
+encode_test: encode_test.cpp
+	$(CXX) -o $@ $^ $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+
 execs: sha256sum sha512sum
 
 debug: sha256sum_debug sha512sum_debug
@@ -42,3 +46,4 @@ debug: sha256sum_debug sha512sum_debug
 clean:
 	rm -f *.o
 	rm -f sha*sum
+	rm -rf encode_test
