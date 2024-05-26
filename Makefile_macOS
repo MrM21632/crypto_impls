@@ -22,6 +22,8 @@ sha512sum.o: sha512sum.cpp
 sha512sum: sha512.o sha512sum.o
 	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
 
+execs: sha256sum sha512sum
+
 clean:
 	rm *.o
 	rm sha*sum

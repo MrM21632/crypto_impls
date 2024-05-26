@@ -50,7 +50,7 @@ SHA224Impl::SHA224Impl() : SHA256::SHA256(sha224_init_vectors) {}
 
 
 uint32_t SHA256::choose(uint32_t x, uint32_t y, uint32_t z) {
-    return z ^ (x & (y ^ x));
+    return (x & y) ^ ((~x) & z);
 }
 
 uint32_t SHA256::major(uint32_t x, uint32_t y, uint32_t z) {
@@ -58,25 +58,25 @@ uint32_t SHA256::major(uint32_t x, uint32_t y, uint32_t z) {
 }
 
 uint32_t SHA256::sum0(uint32_t a) {
-    return rotr32(a, 2) ^ rotr32(a, 13) ^ rotr32(a, 22);
+    return rotr32(a, 2UL) ^ rotr32(a, 13UL) ^ rotr32(a, 22UL);
 }
 
 uint32_t SHA256::sum1(uint32_t e) {
-    return rotr32(e, 6) ^ rotr32(e, 11) ^ rotr32(e, 25);
+    return rotr32(e, 6UL) ^ rotr32(e, 11UL) ^ rotr32(e, 25UL);
 }
 
 uint32_t SHA256::sigma0(uint32_t x) {
-    return rotr32(x, 7) ^ rotr32(x, 18) ^ (x >> 3);
+    return rotr32(x, 7UL) ^ rotr32(x, 18UL) ^ (x >> 3UL);
 }
 
 uint32_t SHA256::sigma1(uint32_t x) {
-    return rotr32(x, 17) ^ rotr32(x, 19) ^ (x >> 10);
+    return rotr32(x, 17UL) ^ rotr32(x, 19UL) ^ (x >> 10UL);
 }
 
 
 void SHA256::compress(std::array<uint8_t, 64> chunk) {
     // Construct the message schedule array
-    std::array<uint32_t, 64> w = {};
+    std::array<uint32_t, 64> w;
     for (int i = 0; i < 16; ++i) {
         w[i] = (
             (uint32_t) chunk[i * 4 + 0] << 24 |
@@ -117,42 +117,35 @@ void SHA256::compress(std::array<uint8_t, 64> chunk) {
 }
 
 
+std::string SHA256::pad_message(std::string message) {
+    // Remember: size() returns number of bytes.
+    // TODO: Technically this approach limits us to 2^61 bytes in length.
+    uint64_t encoded_length = (uint64_t) message.size() << 3;
+
+    message.push_back((char) 0x80);
+    while ((message.size() + 8) % 64 != 0) {
+        message.push_back((char) 0x00);
+    }
+
+    // Append the encoded length in big-endian order.
+    // Assuming little-endian order on your system, this is trivial to do.
+    for (int i = 0; i < 8; ++i, encoded_length >>= 8) {
+        message.push_back((char)(encoded_length & 0xffULL));
+    }
+
+    return message;
+}
+
+
 std::array<uint32_t, 8> SHA256::digest_message(std::string message) {
-    size_t length = message.size();
-    size_t offset = 0;
-    std::array<uint8_t, 64> block;
-    for (; length - offset >= 64; offset += 64) {
+    std::string padded_message = pad_message(message);
+    for (size_t offset = 0; offset < padded_message.size(); offset += 64) {
+        std::array<uint8_t, 64> chunk;
         for (int i = 0; i < 64; ++i) {
-            block[i] = message[offset + i];
+            chunk[i] = padded_message[offset + i];
         }
-        compress(block);
-        for (int i = 0; i < 64; ++i) {
-            block[i] = 0;
-        }
+        compress(chunk);
     }
 
-    size_t remaining = length - offset;
-    if (remaining) {
-        for (size_t i = 0; i < remaining; ++i) {
-            block[i] = message[offset + i];
-        }
-    }
-    block[remaining] = 0x80;
-    ++remaining;
-
-    if (64 - remaining < 8) {
-        compress(block);
-        for (int i = 0; i < 64; ++i) {
-            block[i] = 0;
-        }
-    }
-
-    block[63] = (uint8_t)((length & 0x1fUL) << 3);
-    length >>= 5;
-    for (int i = 1; i < 8; ++i, length >>= 8) {
-        block[63 - i] = (uint8_t) (length & 0xffUL);
-    }
-
-    compress(block);
     return state;
 }

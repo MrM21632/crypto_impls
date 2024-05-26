@@ -28,7 +28,7 @@ private:
     uint64_t sigma1(uint64_t);
 
     // Pad the string into a list of bytes.
-    std::vector<uint8_t> pad_message(std::string);
+    std::string pad_message(std::string);
     // Execute a compression round.
     void compress(std::array<uint8_t, 128>);
 public:
