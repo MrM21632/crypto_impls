@@ -117,28 +117,33 @@ void SHA256::compress(std::array<uint8_t, 64> chunk) {
 }
 
 
-std::string SHA256::pad_message(std::string message) {
+std::vector<uint8_t> SHA256::pad_message(std::string message) {
+    std::vector<uint8_t> result;
+    for (auto &c : message) {
+        result.push_back((uint8_t) c);
+    }
+    
     // Remember: size() returns number of bytes.
     // TODO: Technically this approach limits us to 2^61 bytes in length.
     uint64_t encoded_length = (uint64_t) message.size() << 3;
 
-    message.push_back((char) 0x80);
-    while ((message.size() + 8) % 64 != 0) {
-        message.push_back((char) 0x00);
+    result.push_back((uint8_t) 0x80);
+    while ((result.size() + 8) % 64 != 0) {
+        result.push_back((uint8_t) 0x00);
     }
 
     // Append the encoded length in big-endian order.
-    // Assuming little-endian order on your system, this is trivial to do.
-    for (int i = 0; i < 8; ++i, encoded_length >>= 8) {
-        message.push_back((char)(encoded_length & 0xffULL));
+    for (int i = 7; i >= 0; --i) {
+        uint8_t new_byte = encoded_length >> (8 * i) & 0xff;
+        result.push_back((uint8_t) new_byte);
     }
 
-    return message;
+    return result;
 }
 
 
 std::array<uint32_t, 8> SHA256::digest_message(std::string message) {
-    std::string padded_message = pad_message(message);
+    std::vector<uint8_t> padded_message = pad_message(message);
     for (size_t offset = 0; offset < padded_message.size(); offset += 64) {
         std::array<uint8_t, 64> chunk;
         for (int i = 0; i < 64; ++i) {

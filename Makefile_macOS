@@ -10,11 +10,18 @@ sha256.o: sha256.cpp
 sha512.o: sha512.cpp
 	$(CXX) -c sha512.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
 
+
 sha256sum.o: sha256sum.cpp
 	$(CXX) -c sha256sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
 
 sha256sum: sha256.o sha256sum.o
 	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
+
+sha256sum_debug: sha256.cpp sha256sum.cpp
+	$(CXX) -g -O0 -c sha256.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c sha256sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o sha256sum sha256.o sha256sum.o $(LIBS) $(CXXFLAGS)
+
 
 sha512sum.o: sha512sum.cpp
 	$(CXX) -c sha512sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
@@ -22,8 +29,16 @@ sha512sum.o: sha512sum.cpp
 sha512sum: sha512.o sha512sum.o
 	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
 
+sha512sum_debug: sha512.cpp sha512sum.cpp
+	$(CXX) -g -O0 -c sha512.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c sha512sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o sha512sum sha512.o sha512sum.o $(LIBS) $(CXXFLAGS)
+
+
 execs: sha256sum sha512sum
 
+debug: sha256sum_debug sha512sum_debug
+
 clean:
-	rm *.o
-	rm sha*sum
+	rm -f *.o
+	rm -f sha*sum
