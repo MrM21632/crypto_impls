@@ -94,4 +94,16 @@ public:
     SHA384Impl();
 };
 
+// Implementation of SHA-512/224.
+class SHA512t224Impl : public SHA512 {
+public:
+    SHA512t224Impl();
+};
+
+// Implementation of SHA-512/256.
+class SHA512t256Impl : public SHA512 {
+public:
+    SHA512t256Impl();
+};
+
 #endif  // MRM21632_SHA512_HPP_

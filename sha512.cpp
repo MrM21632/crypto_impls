@@ -15,6 +15,10 @@ SHA512Impl::SHA512Impl() : SHA512::SHA512(sha512_init_vectors) {}
 
 SHA384Impl::SHA384Impl() : SHA512::SHA512(sha384_init_vectors) {}
 
+SHA512t224Impl::SHA512t224Impl() : SHA512::SHA512(sha512t224_init_vectors) {}
+
+SHA512t256Impl::SHA512t256Impl() : SHA512::SHA512(sha512t256_init_vectors) {}
+
 
 uint64_t SHA512::choose(uint64_t x, uint64_t y, uint64_t z) {
     return z ^ (x & (y ^ x));
