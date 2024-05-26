@@ -66,7 +66,7 @@ private:
     void compress(std::array<uint8_t, 64>);
 public:
     SHA256(std::array<uint32_t, 8>);
-    std::vector<uint32_t> digest_message(std::string);
+    std::array<uint32_t, 8> digest_message(std::string);
 };
 
 

@@ -47,7 +47,8 @@ std::vector<uint8_t> SHA256::pad_message(std::string message) {
         result.push_back((uint8_t) *it);
     }
     size_t remainder = message.size() % (size_t) 64;
-    size_t num_zero_bytes = 55 - remainder;  // Accounts for 8 bytes from length, plus the one bit and corresponding zeroes.
+    // Accounts for 8 bytes from length, plus the one bit and corresponding zeroes.
+    size_t num_zero_bytes = 55 - remainder;
 
     result.push_back((uint8_t) 0x80);
     for (int i = 0; i < num_zero_bytes; ++i) {
@@ -103,4 +104,19 @@ void SHA256::compress(std::array<uint8_t, 64> chunk) {
     state[5] += s[5];
     state[6] += s[6];
     state[7] += s[7];
+}
+
+
+std::array<uint32_t, 8> SHA256::digest_message(std::string message) {
+    std::vector<uint8_t> bytes = pad_message(message);
+
+    for (size_t offset = 0; offset < bytes.size(); offset += 64) {
+        std::array<uint8_t, 64> chunk;
+        for (int i = 0; i < 64; ++i) {
+            chunk[i] = bytes[offset + i];
+        }
+        compress(chunk);
+    }
+
+    return state;
 }

@@ -47,7 +47,8 @@ std::vector<uint8_t> SHA512::pad_message(std::string message) {
         result.push_back((uint8_t) *it);
     }
     size_t remainder = message.size() % (size_t) 128;
-    size_t num_zero_bytes = 111 - remainder;  // Accounts for 16 bytes from length, plus the one bit and corresponding zeroes.
+    // Accounts for 16 bytes from length, plus the one bit and corresponding zeroes.
+    size_t num_zero_bytes = 111 - remainder;
 
     // Note: in this case, we're limited by the bounds of size_t, which should be 64 bits on macOS if I'm not mistaken.
     // Because of this, the top 8 bytes of the length will always be zeroes.
@@ -108,4 +109,18 @@ void SHA512::compress(std::array<uint8_t, 128> chunk) {
     state[5] += s[5];
     state[6] += s[6];
     state[7] += s[7];
+}
+
+std::array<uint64_t, 8> SHA512::digest_message(std::string message) {
+    std::vector<uint8_t> bytes = pad_message(message);
+
+    for (size_t offset = 0; offset < bytes.size(); offset += 128) {
+        std::array<uint8_t, 128> chunk;
+        for (int i = 0; i < 128; ++i) {
+            chunk[i] = bytes[offset + i];
+        }
+        compress(chunk);
+    }
+
+    return state;
 }
