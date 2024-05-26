@@ -31,7 +31,7 @@ def rotr32(x: int, n: int) -> int:
 
 
 def sum0(x: int) -> int:
-    return rotr32(x, 7) ^ rotr32(x, 13) ^ rotr32(x, 22)
+    return rotr32(x, 2) ^ rotr32(x, 13) ^ rotr32(x, 22)
 
 def sum1(x: int) -> int:
     return rotr32(x, 6) ^ rotr32(x, 11) ^ rotr32(x, 25)
@@ -84,14 +84,14 @@ def compress(chunk: bytes, state: List[int]) -> List[int]:
     return [add_mod32(x, y) for x, y in zip(state, scratch)]
 
 
-def pad_message(message: str) -> bytes:
+def pad_message(message: bytes) -> bytes:
     length = len(message)
     remaining_bytes = (length + 8) % 64
     reqd_padding_bytes = 64 - remaining_bytes
     zero_bytes = reqd_padding_bytes - 1
     encoded_length = (length << 3).to_bytes(8)
 
-    return message.encode() + b"\x80" + (b"\0" * zero_bytes) + encoded_length
+    return message + b"\x80" + (b"\0" * zero_bytes) + encoded_length
 
 
 def digest_message(message: str) -> None:
@@ -111,21 +111,21 @@ def digest_message(message: str) -> None:
 if __name__ == "__main__":
     test_messages = [
         # e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-        "",
+        "".encode(),
         # ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
-        "a",
+        "a".encode(),
         # ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
-        "abc",
+        "abc".encode(),
         # f7846f55cf23e14eebeab5b4e1550cad5b509e3348fbc4efa3a1413d393cb650
-        "message digest",
+        "message digest".encode(),
         # 05c6e08f1d9fdafa03147fcb8f82f124c76d2f70e3d989dc8aadb5e7d7450bec
-        "the quick brown fox jumps over the lazy dog",
+        "the quick brown fox jumps over the lazy dog".encode(),
         # 18e8d559417db8a93707c11b11bb90b56638049a5994006ed4b2705e4d86587f
-        "the quick brown fox jumps over the lazy dog.",
+        "the quick brown fox jumps over the lazy dog.".encode(),
         # 71c480df93d6ae2f1efad1447c66c9525e316218cf51fc8d9ed832f2daf18b73
-        "abcdefghijklmnopqrstuvwxyz",
+        "abcdefghijklmnopqrstuvwxyz".encode(),
         # 248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1
-        "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
+        "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".encode(),
     ]
 
     for message in test_messages:
