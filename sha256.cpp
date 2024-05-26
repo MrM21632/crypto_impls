@@ -74,29 +74,6 @@ uint32_t SHA256::sigma1(uint32_t x) {
 }
 
 
-std::vector<uint8_t> SHA256::pad_message(std::string message) {
-    std::vector<uint8_t> result;
-    for (std::string::iterator it = message.begin(); it != message.end(); ++it) {
-        result.push_back((uint8_t) *it);
-    }
-    size_t remainder = message.size() % (size_t) 64;
-    // Accounts for 8 bytes from length, plus the one bit and corresponding zeroes.
-    size_t num_zero_bytes = 55 - remainder;
-
-    result.push_back((uint8_t) 0x80);
-    for (size_t i = 0; i < num_zero_bytes; ++i) {
-        result.push_back(0);
-    }
-
-    uint64_t length = (uint64_t) message.size();
-    for (int i = 0; i < 8; ++i) {
-        result.push_back((uint8_t)(length >> (8 * (8 - i - 1)) & 0xff));
-    }
-
-    return result;
-}
-
-
 void SHA256::compress(std::array<uint8_t, 64> chunk) {
     // Construct the message schedule array
     std::array<uint32_t, 64> w = {};
@@ -141,15 +118,41 @@ void SHA256::compress(std::array<uint8_t, 64> chunk) {
 
 
 std::array<uint32_t, 8> SHA256::digest_message(std::string message) {
-    std::vector<uint8_t> bytes = pad_message(message);
-
-    for (size_t offset = 0; offset < bytes.size(); offset += 64) {
-        std::array<uint8_t, 64> chunk;
+    size_t length = message.size();
+    size_t offset = 0;
+    std::array<uint8_t, 64> block;
+    for (; length - offset >= 64; offset += 64) {
         for (int i = 0; i < 64; ++i) {
-            chunk[i] = bytes[offset + i];
+            block[i] = message[offset + i];
         }
-        compress(chunk);
+        compress(block);
+        for (int i = 0; i < 64; ++i) {
+            block[i] = 0;
+        }
     }
 
+    size_t remaining = length - offset;
+    if (remaining) {
+        for (size_t i = 0; i < remaining; ++i) {
+            block[i] = message[offset + i];
+        }
+    }
+    block[remaining] = 0x80;
+    ++remaining;
+
+    if (64 - remaining < 8) {
+        compress(block);
+        for (int i = 0; i < 64; ++i) {
+            block[i] = 0;
+        }
+    }
+
+    block[63] = (uint8_t)((length & 0x1fUL) << 3);
+    length >>= 5;
+    for (int i = 1; i < 8; ++i, length >>= 8) {
+        block[63 - i] = (uint8_t) (length & 0xffUL);
+    }
+
+    compress(block);
     return state;
 }
