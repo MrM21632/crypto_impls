@@ -60,8 +60,8 @@ private:
     // σ1(w)
     uint32_t sigma1(uint32_t);
 
-    // Execute a compression round.
-    void compress(std::array<uint32_t, 16>&);
+    // Execute a compression round. Accepts a 512-bit chunk of the padded message as input.
+    void compress(std::array<uint8_t, 64>&);
 public:
     SHA256(std::array<uint32_t, 8>&);
     std::vector<uint32_t>& digest_message(std::string &message);

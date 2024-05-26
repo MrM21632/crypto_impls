@@ -41,11 +41,16 @@ uint32_t SHA256::sigma1(uint32_t x) {
 }
 
 
-void SHA256::compress(std::array<uint32_t, 16> &chunk) {
+void SHA256::compress(std::array<uint8_t, 64> &chunk) {
     // Construct the message schedule array
     std::array<uint32_t, 64> w = {};
     for (int i = 0; i < 16; ++i) {
-        w[i] = chunk[i];
+        w[i] = (
+            (uint32_t) chunk[i * 4 + 0] << 24 |
+            (uint32_t) chunk[i * 4 + 1] << 16 |
+            (uint32_t) chunk[i * 4 + 2] <<  8 |
+            (uint32_t) chunk[i * 4 + 3]
+        );
     }
     for (int i = 16; i < 64; ++i) {
         w[i] = w[i - 16] + sigma0(w[i - 15]) + w[i - 7] + sigma1(w[i - 2]);
@@ -67,6 +72,7 @@ void SHA256::compress(std::array<uint32_t, 16> &chunk) {
         s[0] = tmp1 + tmp2;
     }
 
+    // Update algorithm state
     state[0] += s[0];
     state[1] += s[1];
     state[2] += s[2];

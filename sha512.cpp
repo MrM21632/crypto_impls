@@ -41,11 +41,20 @@ uint64_t SHA512::sigma1(uint64_t x) {
 }
 
 
-void SHA512::compress(std::array<uint64_t, 16> &chunk) {
+void SHA512::compress(std::array<uint8_t, 128> &chunk) {
     // Construct the message schedule array
     std::array<uint64_t, 80> w = {};
     for (int i = 0; i < 16; ++i) {
-        w[i] = chunk[i];
+        w[i] = (
+            (uint64_t) chunk[i * 8 + 0] << 56 |
+            (uint64_t) chunk[i * 8 + 1] << 48 |
+            (uint64_t) chunk[i * 8 + 2] << 40 |
+            (uint64_t) chunk[i * 8 + 3] << 32 |
+            (uint64_t) chunk[i * 8 + 4] << 24 |
+            (uint64_t) chunk[i * 8 + 5] << 16 |
+            (uint64_t) chunk[i * 8 + 6] <<  8 |
+            (uint64_t) chunk[i * 8 + 7]
+        );
     }
     for (int i = 16; i < 80; ++i) {
         w[i] = w[i - 16] + sigma0(w[i - 15]) + w[i - 7] + sigma1(w[i - 2]);
