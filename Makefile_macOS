@@ -1,0 +1,13 @@
+# Assumes you have a Homebrew-managed installation of LLVM.
+CXX = /opt/homebrew/opt/llvm/bin/clang++ -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
+CXXFLAGS = -fcolor-diagnostics -fansi-escape-codes -std=c++20 -stdlib=libc++ -Wall -Wextra -pedantic
+INCLUDES = -I/opt/homebrew/opt/llvm/include -I.
+
+sha256.o: sha256.cpp
+	$(CXX) -c sha256.cpp $(INCLUDES) $(CXXFLAGS)
+
+sha512.o: sha512.cpp
+	$(CXX) -c sha512.cpp $(INCLUDES) $(CXXFLAGS)
+
+clean:
+	rm *.o

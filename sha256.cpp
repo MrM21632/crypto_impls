@@ -51,7 +51,7 @@ std::vector<uint8_t> SHA256::pad_message(std::string message) {
     size_t num_zero_bytes = 55 - remainder;
 
     result.push_back((uint8_t) 0x80);
-    for (int i = 0; i < num_zero_bytes; ++i) {
+    for (size_t i = 0; i < num_zero_bytes; ++i) {
         result.push_back(0);
     }
 

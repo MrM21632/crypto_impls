@@ -53,7 +53,7 @@ std::vector<uint8_t> SHA512::pad_message(std::string message) {
     // Note: in this case, we're limited by the bounds of size_t, which should be 64 bits on macOS if I'm not mistaken.
     // Because of this, the top 8 bytes of the length will always be zeroes.
     result.push_back((uint8_t) 0x80);
-    for (int i = 0; i < num_zero_bytes + 8; ++i) {
+    for (size_t i = 0; i < num_zero_bytes + 8; ++i) {
         result.push_back(0);
     }
 
