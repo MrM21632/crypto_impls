@@ -55,7 +55,7 @@ std::array<uint64_t, 8> sha512t256_init_vectors({
 // Baseline implementation of the SHA-512 and derived hash functions.
 class SHA512 {
 private:
-    std::array<uint64_t, 8> &state;  // Initialization vectors, and final state
+    std::array<uint64_t, 8> state;  // Initialization vectors, and final state
 
     // Ch(e, f, g)
     uint64_t choose(uint64_t, uint64_t, uint64_t);
@@ -72,11 +72,13 @@ private:
     // σ1(w)
     uint64_t sigma1(uint64_t);
 
+    // Pad the string into a list of bytes.
+    std::vector<uint8_t> pad_message(std::string);
     // Execute a compression round.
-    void compress(std::array<uint8_t, 128>&);
+    void compress(std::array<uint8_t, 128>);
 public:
-    SHA512(std::array<uint64_t, 8>&);
-    std::vector<uint64_t>& digest_message(std::string &message);
+    SHA512(std::array<uint64_t, 8>);
+    std::vector<uint64_t> digest_message(std::string &message);
 };
 
 

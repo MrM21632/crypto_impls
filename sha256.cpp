@@ -9,7 +9,7 @@ uint32_t rotr32(uint32_t x, uint32_t n) {
 }
 
 
-SHA256::SHA256(std::array<uint32_t, 8> &init_vectors) : state(init_vectors) {}
+SHA256::SHA256(std::array<uint32_t, 8> init_vectors) : state(init_vectors) {}
 
 SHA256Impl::SHA256Impl() : SHA256::SHA256(sha256_init_vectors) {}
 
@@ -41,7 +41,29 @@ uint32_t SHA256::sigma1(uint32_t x) {
 }
 
 
-void SHA256::compress(std::array<uint8_t, 64> &chunk) {
+std::vector<uint8_t> SHA256::pad_message(std::string message) {
+    std::vector<uint8_t> result;
+    for (std::string::iterator it = message.begin(); it != message.end(); ++it) {
+        result.push_back((uint8_t) *it);
+    }
+    size_t remainder = message.size() % (size_t) 64;
+    size_t num_zero_bytes = 55 - remainder;  // Accounts for 8 bytes from length, plus the one bit and corresponding zeroes.
+
+    result.push_back((uint8_t) 0x80);
+    for (int i = 0; i < num_zero_bytes; ++i) {
+        result.push_back(0);
+    }
+
+    uint64_t length = (uint64_t) message.size();
+    for (int i = 0; i < 8; ++i) {
+        result.push_back((uint8_t)(length >> (8 * (8 - i - 1)) & 0xff));
+    }
+
+    return result;
+}
+
+
+void SHA256::compress(std::array<uint8_t, 64> chunk) {
     // Construct the message schedule array
     std::array<uint32_t, 64> w = {};
     for (int i = 0; i < 16; ++i) {

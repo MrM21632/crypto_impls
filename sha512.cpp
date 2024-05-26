@@ -9,7 +9,7 @@ uint64_t rotr64(uint64_t x, uint64_t n) {
 }
 
 
-SHA512::SHA512(std::array<uint64_t, 8> &init_vectors) : state(init_vectors) {}
+SHA512::SHA512(std::array<uint64_t, 8> init_vectors) : state(init_vectors) {}
 
 SHA512Impl::SHA512Impl() : SHA512::SHA512(sha512_init_vectors) {}
 
@@ -41,7 +41,31 @@ uint64_t SHA512::sigma1(uint64_t x) {
 }
 
 
-void SHA512::compress(std::array<uint8_t, 128> &chunk) {
+std::vector<uint8_t> SHA512::pad_message(std::string message) {
+    std::vector<uint8_t> result;
+    for (std::string::iterator it = message.begin(); it != message.end(); ++it) {
+        result.push_back((uint8_t) *it);
+    }
+    size_t remainder = message.size() % (size_t) 128;
+    size_t num_zero_bytes = 111 - remainder;  // Accounts for 16 bytes from length, plus the one bit and corresponding zeroes.
+
+    // Note: in this case, we're limited by the bounds of size_t, which should be 64 bits on macOS if I'm not mistaken.
+    // Because of this, the top 8 bytes of the length will always be zeroes.
+    result.push_back((uint8_t) 0x80);
+    for (int i = 0; i < num_zero_bytes + 8; ++i) {
+        result.push_back(0);
+    }
+
+    uint64_t length = (uint64_t) message.size();
+    for (int i = 0; i < 8; ++i) {
+        result.push_back((uint8_t)(length >> (8 * (8 - i - 1)) & 0xff));
+    }
+
+    return result;
+}
+
+
+void SHA512::compress(std::array<uint8_t, 128> chunk) {
     // Construct the message schedule array
     std::array<uint64_t, 80> w = {};
     for (int i = 0; i < 16; ++i) {
