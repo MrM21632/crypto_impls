@@ -5,34 +5,34 @@
 
 // Round constants for SHA-224 and SHA-256.
 std::array<uint32_t, 64> sha256_round_constants({
-    0x428a2f98UL, 0x71374491UL, 0xb5c0fbcfUL, 0xe9b5dba5UL,
-    0x3956c25bUL, 0x59f111f1UL, 0x923f82a4UL, 0xab1c5ed5UL,
-    0xd807aa98UL, 0x12835b01UL, 0x243185beUL, 0x550c7dc3UL,
-    0x72be5d74UL, 0x80deb1feUL, 0x9bdc06a7UL, 0xc19bf174UL,
-    0xe49b69c1UL, 0xefbe4786UL, 0x0fc19dc6UL, 0x240ca1ccUL,
-    0x2de92c6fUL, 0x4a7484aaUL, 0x5cb0a9dcUL, 0x76f988daUL,
-    0x983e5152UL, 0xa831c66dUL, 0xb00327c8UL, 0xbf597fc7UL,
-    0xc6e00bf3UL, 0xd5a79147UL, 0x06ca6351UL, 0x14292967UL,
-    0x27b70a85UL, 0x2e1b2138UL, 0x4d2c6dfcUL, 0x53380d13UL,
-    0x650a7354UL, 0x766a0abbUL, 0x81c2c92eUL, 0x92722c85UL,
-    0xa2bfe8a1UL, 0xa81a664bUL, 0xc24b8b70UL, 0xc76c51a3UL,
-    0xd192e819UL, 0xd6990624UL, 0xf40e3585UL, 0x106aa070UL,
-    0x19a4c116UL, 0x1e376c08UL, 0x2748774cUL, 0x34b0bcb5UL,
-    0x391c0cb3UL, 0x4ed8aa4aUL, 0x5b9cca4fUL, 0x682e6ff3UL,
-    0x748f82eeUL, 0x78a5636fUL, 0x84c87814UL, 0x8cc70208UL,
-    0x90befffaUL, 0xa4506cebUL, 0xbef9a3f7UL, 0xc67178f2UL,
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 });
 
 // Initialization vectors for SHA-256.
-std::array<uint32_t, 8> sha256_init_vectors({
-    0x6a09e667UL, 0xbb67ae85UL, 0x3c6ef372UL, 0xa54ff53aUL,
-    0x510e527fUL, 0x9b05688cUL, 0x1f83d9abUL, 0x5be0cd19UL,
+std::array<uint32_t, 8> sha256_init_vector({
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
 });
 
 // Initialization vectors for SHA-224.
-std::array<uint32_t, 8> sha224_init_vectors({
-    0xc1059ed8UL, 0x367cd507UL, 0x3070dd17UL, 0xf70e5939UL,
-    0xffc00b31UL, 0x68581511UL, 0x64f98fa7UL, 0xbefa4fa4UL,
+std::array<uint32_t, 8> sha224_init_vector({
+    0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,
+    0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4,
 });
 
 
@@ -43,8 +43,7 @@ uint32_t rotr32(uint32_t x, uint32_t n) {
 }
 
 
-std::array<uint8_t, 8> expand_length(uint64_t length) {
-    std::cout << length << std::endl;
+std::array<uint8_t, 8> uint64_to_bytes(uint64_t length) {
     std::array<uint8_t, 8> result;
     for (int i = 7; i >= 0; --i) {
         result[7 - i] = (length >> (8 * i)) & 0xff;
@@ -54,11 +53,11 @@ std::array<uint8_t, 8> expand_length(uint64_t length) {
 }
 
 
-SHA256::SHA256(std::array<uint32_t, 8> init_vectors) : state(init_vectors) {}
+SHA256::SHA256(std::array<uint32_t, 8> init_vector) : state(init_vector) {}
 
-SHA256Impl::SHA256Impl() : SHA256::SHA256(sha256_init_vectors) {}
+SHA256Impl::SHA256Impl() : SHA256::SHA256(sha256_init_vector) {}
 
-SHA224Impl::SHA224Impl() : SHA256::SHA256(sha224_init_vectors) {}
+SHA224Impl::SHA224Impl() : SHA256::SHA256(sha224_init_vector) {}
 
 
 uint32_t SHA256::choose(uint32_t x, uint32_t y, uint32_t z) {
@@ -70,19 +69,19 @@ uint32_t SHA256::major(uint32_t x, uint32_t y, uint32_t z) {
 }
 
 uint32_t SHA256::sum0(uint32_t a) {
-    return rotr32(a, 2UL) ^ rotr32(a, 13UL) ^ rotr32(a, 22UL);
+    return rotr32(a, 2) ^ rotr32(a, 13) ^ rotr32(a, 22);
 }
 
 uint32_t SHA256::sum1(uint32_t e) {
-    return rotr32(e, 6UL) ^ rotr32(e, 11UL) ^ rotr32(e, 25UL);
+    return rotr32(e, 6) ^ rotr32(e, 11) ^ rotr32(e, 25);
 }
 
 uint32_t SHA256::sigma0(uint32_t x) {
-    return rotr32(x, 7UL) ^ rotr32(x, 18UL) ^ (x >> 3UL);
+    return rotr32(x, 7) ^ rotr32(x, 18) ^ (x >> 3);
 }
 
 uint32_t SHA256::sigma1(uint32_t x) {
-    return rotr32(x, 17UL) ^ rotr32(x, 19UL) ^ (x >> 10UL);
+    return rotr32(x, 17) ^ rotr32(x, 19) ^ (x >> 10);
 }
 
 
@@ -118,33 +117,28 @@ void SHA256::compress(std::array<uint8_t, 64> chunk) {
     }
 
     // Update algorithm state
-    state[0] += s[0];
-    state[1] += s[1];
-    state[2] += s[2];
-    state[3] += s[3];
-    state[4] += s[4];
-    state[5] += s[5];
-    state[6] += s[6];
-    state[7] += s[7];
+    for (int i = 0; i < 8; ++i) {
+        state[i] += s[i];
+    }
 }
 
 
 std::vector<uint8_t> SHA256::pad_message(std::string message) {
     std::vector<uint8_t> result;
     for (auto &c : message) {
-        result.push_back((uint8_t) c);
+        result.push_back(c);
     }
     size_t length = message.size();
     size_t remaining_bytes = (length + 8) % 64;
     size_t required_padding_bytes = 64 - remaining_bytes;
     size_t zero_bytes = required_padding_bytes - 1;
 
-    result.push_back((uint8_t) 0x80);
+    result.push_back(0x80);
     for (size_t i = 0; i < zero_bytes; ++i) {
-        result.push_back((uint8_t) 0x00);
+        result.push_back(0x00);
     }
 
-    std::array<uint8_t, 8> encoded_length = expand_length(length * 8);
+    std::array<uint8_t, 8> encoded_length = uint64_to_bytes((uint64_t) length << 3);
     for (int i = 0; i < 8; ++i) {
         result.push_back(encoded_length[i]);
     }

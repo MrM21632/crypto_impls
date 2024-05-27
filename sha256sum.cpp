@@ -23,8 +23,8 @@ int main() {
         "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
     };
 
-    SHA256Impl hash;
     for (std::string message : test_messages) {
+        SHA256Impl hash;
         std::array<uint32_t, 8> result = hash.digest_message(message);
 
         std::cout << message << ": ";

@@ -56,32 +56,23 @@ def compress(chunk: bytes, state: List[int]) -> List[int]:
     for i in range(16):
         w.append(int.from_bytes(chunk[(i * 4):(i * 4 + 4)]))
     for i in range(16, 64):
-        w.append(add_mod32(w[i - 16] + sigma0(w[i - 15]) + w[i - 7] + sigma1(w[i - 2])))
+        w.append(add_mod32(w[i - 16], sigma0(w[i - 15]), w[i - 7], sigma1(w[i - 2])))
     
-    scratch = state[:]
+    s = state[:]
     for i in range(64):
-        tmp1 = add_mod32(
-            scratch[7],
-            sum1(scratch[4]),
-            choose(scratch[4], scratch[5], scratch[6]),
-            w[i],
-            round_constants[i],
-        )
-        tmp2 = add_mod32(
-            sum0(scratch[0]),
-            major(scratch[0], scratch[1], scratch[2]),
-        )
+        tmp1 = add_mod32(s[7], sum1(s[4]), choose(s[4], s[5], s[6]), w[i], round_constants[i])
+        tmp2 = add_mod32(sum0(s[0]), major(s[0], s[1], s[2]))
 
-        scratch[7] = scratch[6]
-        scratch[6] = scratch[5]
-        scratch[5] = scratch[4]
-        scratch[4] = add_mod32(scratch[3], tmp1)
-        scratch[3] = scratch[2]
-        scratch[2] = scratch[1]
-        scratch[1] = scratch[0]
-        scratch[0] = add_mod32(tmp1, tmp2)
+        s[7] = s[6]
+        s[6] = s[5]
+        s[5] = s[4]
+        s[4] = add_mod32(s[3], tmp1)
+        s[3] = s[2]
+        s[2] = s[1]
+        s[1] = s[0]
+        s[0] = add_mod32(tmp1, tmp2)
     
-    return [add_mod32(x, y) for x, y in zip(state, scratch)]
+    return [add_mod32(x, y) for x, y in zip(state, s)]
 
 
 def pad_message(message: bytes) -> bytes:
