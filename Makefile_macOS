@@ -98,10 +98,6 @@ md5sum_debug: md5.cpp md5sum.cpp
 	$(CXX) -o md5sum md5.o md5sum.o $(LIBS) $(CXXFLAGS)
 
 
-encode_test: encode_test.cpp
-	$(CXX) -o $@ $^ $(INCLUDES) $(LIBS) $(CXXFLAGS)
-
-
 EXEC_DEPS := sha224sum sha256sum sha384sum sha512sum
 EXEC_DEPS += sha512t224sum sha512t256sum
 EXEC_DEPS += md5sum
