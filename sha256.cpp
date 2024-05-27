@@ -42,7 +42,6 @@ uint32_t rotr32(uint32_t x, uint32_t n) {
     return (x >> n) | (x << (32 - n));
 }
 
-
 std::array<uint8_t, 8> uint64_to_bytes(uint64_t length) {
     std::array<uint8_t, 8> result;
     for (int i = 7; i >= 0; --i) {

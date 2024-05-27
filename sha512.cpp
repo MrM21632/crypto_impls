@@ -53,7 +53,6 @@ uint64_t rotr64(uint64_t x, uint64_t n) {
     return (x >> n) | (x << (64 - n));
 }
 
-
 std::array<uint8_t, 8> uint64_to_bytes(uint64_t length) {
     std::array<uint8_t, 8> result;
     for (int i = 7; i >= 0; --i) {

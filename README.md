@@ -2,6 +2,7 @@
 
 This repository contains a test implementation of several families of cryptographic hashes. Currently, the following are fully implemented and verified:
 - MD5
+- SHA-1
 - SHA-224
 - SHA-256
 - SHA-384
@@ -10,7 +11,6 @@ This repository contains a test implementation of several families of cryptograp
 - SHA-512/256
 
 Implementations for the following will also be provided down the line:
-- SHA-1
 - RIPEMD
 - BLAKE2b
 
