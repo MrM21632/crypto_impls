@@ -10,7 +10,8 @@
 // Baseline implementation of the SHA-256 and derived hash functions.
 class SHA256 {
 private:
-    std::array<uint32_t, 8> state;  // Initialization vectors, and final state
+    std::array<uint32_t, 8> init_vector;  // Initialization vector; used to reset state for each hash.
+    std::array<uint32_t, 8> state;  // Hash state
 
     // Ch(e, f, g)
     uint32_t choose(uint32_t, uint32_t, uint32_t);

@@ -23,25 +23,25 @@ std::array<uint64_t, 80> sha512_round_constants({
 });
 
 // Initialization vectors for SHA-512.
-std::array<uint64_t, 8> sha512_init_vectors({
+std::array<uint64_t, 8> sha512_init_vector({
     0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1, 
     0x510e527fade682d1, 0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179,
 });
 
 // Initialization vectors for SHA-384.
-std::array<uint64_t, 8> sha384_init_vectors({
+std::array<uint64_t, 8> sha384_init_vector({
     0xcbbb9d5dc1059ed8, 0x629a292a367cd507, 0x9159015a3070dd17, 0x152fecd8f70e5939, 
     0x67332667ffc00b31, 0x8eb44a8768581511, 0xdb0c2e0d64f98fa7, 0x47b5481dbefa4fa4,
 });
 
 // Initialization vectors for SHA-512/224.
-std::array<uint64_t, 8> sha512t224_init_vectors({
+std::array<uint64_t, 8> sha512t224_init_vector({
     0x8c3d37c819544da2, 0x73e1996689dcd4d6, 0x1dfab7ae32ff9c82, 0x679dd514582f9fcf,
     0x0f6d2b697bd44da8, 0x77e36f7304c48942, 0x3f9d85a86a1d36c8, 0x1112e6ad91d692a1,
 });
 
 // Initialization vectors for SHA-512/256.
-std::array<uint64_t, 8> sha512t256_init_vectors({
+std::array<uint64_t, 8> sha512t256_init_vector({
     0x22312194fc2bf72c, 0x9f555fa3c84c64c2, 0x2393b86b6f53b151, 0x963877195940eabd,
     0x96283ee2a88effe3, 0xbe5e1e2553863992, 0x2b0199fc2c85b8aa, 0x0eb72ddc81c52ca2,
 });
@@ -64,15 +64,15 @@ std::array<uint8_t, 8> uint64_to_bytes(uint64_t length) {
 }
 
 
-SHA512::SHA512(std::array<uint64_t, 8> init_vectors) : state(init_vectors) {}
+SHA512::SHA512(std::array<uint64_t, 8> init_vector) : init_vector(init_vector) {}
 
-SHA512Impl::SHA512Impl() : SHA512::SHA512(sha512_init_vectors) {}
+SHA512Impl::SHA512Impl() : SHA512::SHA512(sha512_init_vector) {}
 
-SHA384Impl::SHA384Impl() : SHA512::SHA512(sha384_init_vectors) {}
+SHA384Impl::SHA384Impl() : SHA512::SHA512(sha384_init_vector) {}
 
-SHA512t224Impl::SHA512t224Impl() : SHA512::SHA512(sha512t224_init_vectors) {}
+SHA512t224Impl::SHA512t224Impl() : SHA512::SHA512(sha512t224_init_vector) {}
 
-SHA512t256Impl::SHA512t256Impl() : SHA512::SHA512(sha512t256_init_vectors) {}
+SHA512t256Impl::SHA512t256Impl() : SHA512::SHA512(sha512t256_init_vector) {}
 
 
 uint64_t SHA512::choose(uint64_t x, uint64_t y, uint64_t z) {
@@ -168,6 +168,8 @@ std::vector<uint8_t> SHA512::pad_message(std::string message) {
 
 std::array<uint64_t, 8> SHA512::digest_message(std::string message) {
     std::vector<uint8_t> padded_message = pad_message(message);
+    state = init_vector;
+    
     for (size_t offset = 0; offset < padded_message.size(); offset += 128) {
         std::array<uint8_t, 128> chunk;
         for (int i = 0; i < 128; ++i) {

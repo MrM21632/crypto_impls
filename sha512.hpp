@@ -10,7 +10,8 @@
 // Baseline implementation of the SHA-512 and derived hash functions.
 class SHA512 {
 private:
-    std::array<uint64_t, 8> state;  // Initialization vectors, and final state
+    std::array<uint64_t, 8> init_vector;  // Initialization vector; used to reset state for each hash.
+    std::array<uint64_t, 8> state;  // Hash state
 
     // Ch(e, f, g)
     uint64_t choose(uint64_t, uint64_t, uint64_t);

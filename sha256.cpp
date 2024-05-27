@@ -53,7 +53,7 @@ std::array<uint8_t, 8> uint64_to_bytes(uint64_t length) {
 }
 
 
-SHA256::SHA256(std::array<uint32_t, 8> init_vector) : state(init_vector) {}
+SHA256::SHA256(std::array<uint32_t, 8> init_vector) : init_vector(init_vector) {}
 
 SHA256Impl::SHA256Impl() : SHA256::SHA256(sha256_init_vector) {}
 
@@ -149,6 +149,8 @@ std::vector<uint8_t> SHA256::pad_message(std::string message) {
 
 std::array<uint32_t, 8> SHA256::digest_message(std::string message) {
     std::vector<uint8_t> padded_message = pad_message(message);
+    state = init_vector;
+    
     for (size_t offset = 0; offset < padded_message.size(); offset += 64) {
         std::array<uint8_t, 64> chunk;
         for (int i = 0; i < 64; ++i) {

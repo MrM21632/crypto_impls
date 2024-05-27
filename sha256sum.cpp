@@ -3,7 +3,6 @@
 
 
 int main() {
-    // TODO: Currently fails for non-empty messages, need to investigate
     std::vector<std::string> test_messages = {
         // e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
         "",
@@ -23,8 +22,8 @@ int main() {
         "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
     };
 
+    SHA256Impl hash;
     for (std::string message : test_messages) {
-        SHA256Impl hash;
         std::array<uint32_t, 8> result = hash.digest_message(message);
 
         std::cout << message << ": ";
