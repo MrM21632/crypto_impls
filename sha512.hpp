@@ -28,8 +28,8 @@ private:
     uint64_t sigma1(uint64_t);
 
     // Pad the string into a list of bytes.
-    std::string pad_message(std::string);
-    // Execute a compression round.
+    std::vector<uint8_t> pad_message(std::string);
+    // Execute a compression round. Accepts a 1024-bit chunk of the padded message as input.
     void compress(std::array<uint8_t, 128>);
 public:
     SHA512(std::array<uint64_t, 8>);

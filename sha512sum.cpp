@@ -23,8 +23,8 @@ int main() {
         "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu",
     };
 
-    SHA512Impl hash;
     for (std::string message : test_messages) {
+        SHA512Impl hash;
         std::array<uint64_t, 8> result = hash.digest_message(message);
 
         std::cout << message << ": ";
