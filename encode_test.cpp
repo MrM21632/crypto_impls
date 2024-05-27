@@ -14,6 +14,7 @@ std::array<uint8_t, 8> expand_length(uint64_t length) {
 }
 
 
+// Test file I wrote to verify length encoding for SHA-2.
 int main() {
     std::vector<uint64_t> test_lengths = {
         0,

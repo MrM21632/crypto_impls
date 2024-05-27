@@ -62,6 +62,30 @@ sha512sum_debug: sha512.cpp sha512sum.cpp
 	$(CXX) -o sha512sum sha512.o sha512sum.o $(LIBS) $(CXXFLAGS)
 
 
+sha512t224sum.o: sha512t224sum.cpp
+	$(CXX) -c sha512t224sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+sha512t224sum: sha512.o sha512t224sum.o
+	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
+
+sha512t224sum_debug: sha512.cpp sha512t224sum.cpp
+	$(CXX) -g -O0 -c sha512.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c sha512t224sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o sha512t224sum sha512.o sha512t224sum.o $(LIBS) $(CXXFLAGS)
+
+
+sha512t256sum.o: sha512t256sum.cpp
+	$(CXX) -c sha512t256sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+sha512t256sum: sha512.o sha512t256sum.o
+	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
+
+sha512t256sum_debug: sha512.cpp sha512t256sum.cpp
+	$(CXX) -g -O0 -c sha512.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c sha512t256sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o sha512t256sum sha512.o sha512t256sum.o $(LIBS) $(CXXFLAGS)
+
+
 md5sum.o: md5sum.cpp
 	$(CXX) -c md5sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
 
@@ -78,9 +102,15 @@ encode_test: encode_test.cpp
 	$(CXX) -o $@ $^ $(INCLUDES) $(LIBS) $(CXXFLAGS)
 
 
-execs: sha224sum sha256sum sha384sum sha512sum md5sum
+EXEC_DEPS := sha224sum sha256sum sha384sum sha512sum
+EXEC_DEPS += sha512t224sum sha512t256sum
+EXEC_DEPS += md5sum
+execs: $(EXEC_DEPS)
 
-debug: sha224sum_debug sha256sum_debug sha384sum_debug sha512sum_debug md5sum_debug
+DEBUG_DEPS := sha224sum_debug sha256sum_debug sha384sum_debug sha512sum_debug
+DEBUG_DEPS += sha512t224sum_debug sha512t256sum_debug
+DEBUG_DEPS += md5sum_debug
+debug: $(DEBUG_DEPS)
 
 clean:
 	rm -f *.o
