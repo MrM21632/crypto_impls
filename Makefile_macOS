@@ -16,6 +16,9 @@ md5.o: md5.cpp
 sha1.o: sha1.cpp
 	$(CXX) -c sha1.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
 
+ripemd.o: ripemd.cpp
+	$(CXX) -c ripemd.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
 
 sha224sum.o: sha224sum.cpp
 	$(CXX) -c sha224sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
@@ -113,18 +116,51 @@ sha1sum_debug: sha1.cpp sha1sum.cpp
 	$(CXX) -o sha1sum sha1.o sha1sum.o $(LIBS) $(CXXFLAGS)
 
 
+ripemd128.o: ripemd128.cpp
+	$(CXX) -c ripemd128.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+ripemd128sum.o: ripemd128sum.cpp
+	$(CXX) -c ripemd128sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+ripemd128sum: ripemd.o ripemd128.o ripemd128sum.o
+	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
+
+ripemd128sum_debug: ripemd.cpp ripemd128sum.cpp
+	$(CXX) -g -O0 -c ripemd.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c ripemd128sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o ripemd128sum ripemd.o ripemd128sum.o $(LIBS) $(CXXFLAGS)
+
+
+ripemd160.o: ripemd160.cpp
+	$(CXX) -c ripemd160.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+ripemd160sum.o: ripemd160sum.cpp
+	$(CXX) -c ripemd160sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+
+ripemd160sum: ripemd.o ripemd160.o ripemd160sum.o
+	$(CXX) -o $@ $^ $(LIBS) $(CXXFLAGS)
+
+ripemd160sum_debug: ripemd.cpp ripemd160sum.cpp
+	$(CXX) -g -O0 -c ripemd.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -g -O0 -c ripemd160sum.cpp $(INCLUDES) $(LIBS) $(CXXFLAGS)
+	$(CXX) -o ripemd160sum ripemd.o ripemd160sum.o $(LIBS) $(CXXFLAGS)
+
+
 EXEC_DEPS := sha224sum sha256sum sha384sum sha512sum
 EXEC_DEPS += sha512t224sum sha512t256sum
 EXEC_DEPS += md5sum sha1sum
+EXEC_DEPS += ripemd128sum ripemd160sum
 execs: $(EXEC_DEPS)
 
 DEBUG_DEPS := sha224sum_debug sha256sum_debug sha384sum_debug sha512sum_debug
 DEBUG_DEPS += sha512t224sum_debug sha512t256sum_debug
 DEBUG_DEPS += md5sum_debug sha1sum_debug
+DEBUG_DEPS += ripemd128sum_debug ripemd160sum_debug
 debug: $(DEBUG_DEPS)
 
 clean:
 	rm -f *.o
 	rm -f sha*sum
 	rm -f md5sum
+	rm -f ripemd*sum
 	rm -f encode_test
